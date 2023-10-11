@@ -15,7 +15,8 @@ Basic steps:
 - Set the db connection in `.env`
 - Generate the app key `php artisan key:generate`
 - Run db migration `php artisan migrate`
-- Start the app `php artisan serve`
+- Compile frontend assets `npm run build`
+- Start the app in separate terminal `php artisan serve`
 - Start the horizon in separate terminal `php artisan horizon`
 
 ## Tech stack
