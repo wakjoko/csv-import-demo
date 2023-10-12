@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Product;
+use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\DB;
@@ -15,12 +16,13 @@ class UpsertProductsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
 
+    public $maxTries = 10;
     public $products;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($products)
+    public function __construct(array $products)
     {
         $this->onConnection('redis');
         $this->products = $products;
@@ -42,9 +44,22 @@ class UpsertProductsJob implements ShouldQueue
             $products[] = $filtered;
         }
 
-        DB::transaction(function() use ($products) {
-            Product::query()->lockForUpdate()->upsert($products, 'unique_key');
-        }, 2);
+        // another way of preventing deadlocks is by using retry()
+        // but here we will retry the job again when insert fails
+        try {
+            DB::transaction(fn() =>
+                Product::query()->upsert($products, 'unique_key')
+            );
+        } catch (Exception $exception) {
+            if ($this->attempts() > 5) {
+                // mark as failed after 5 tries
+                throw $exception;
+            }
+
+            // retry after 30 seconds
+            $this->release(30);
+            return;
+        }
     }
 
     public function tags(): array
