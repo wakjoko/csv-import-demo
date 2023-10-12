@@ -1,6 +1,6 @@
 <h1 align="center">CSV Import App for YoPrint</h1>
 
-https://github.com/wakjoko/yoPrint-assesment/assets/8953339/2bc6a96c-2d92-49ad-bfba-917f329d7542
+https://github.com/wakjoko/yoPrint-assesment/assets/8953339/e5d2a39a-dbe2-4055-be30-1a1d46872beb
 
 ## Introduction
 This app demonstrate importing CSV files into database based on specs listed in assessment docs prepared by Anbin Muniandy of YoPrint for Laravel Engineer Application Coding Assignment.
