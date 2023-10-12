@@ -30,7 +30,7 @@
                                     <span :id="`status${upload.id}`">
                                         {{ upload.status ?? 'pending' }}
                                     </span>
-                                    <div class="progress" v-if="(upload.status ?? 'pending') !== 'completed'">
+                                    <div class="progress" v-if="showProgress(upload.status)">
                                         <div :id="`progress${upload.id}`" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100"
                                             :aria-valuenow="upload.progress ?? 0"
                                             :style="{ width: `${upload.progress ?? 0}%` }">
@@ -61,45 +61,52 @@
     },
     methods: {  
       upload(event) {
-        ImportService.set(event.target.files)
-          .then((response) => {
-            this.uploaded.push(...response.data);
-            this.progress();
-          })
-          .finally(() => event.target.value = null);
+        let uploads = [];
+        
+        for (const file of event.target.files) {
+          uploads.push(
+            ImportService
+              .set(file)
+              .then((response) => {
+                this.uploaded.push(response.data);
+                this.updateProgress(response.data.id);
+              })
+          );
+        }
+
+        Promise.all(uploads).finally(() => event.target.value = null);
       },
 
-      progress() {
-        this.uploaded
-        .filter((uploaded) => (uploaded.status ?? 'pending') !== 'completed')
-        .forEach(uploaded => {
-            const listener = function () {
-                const stream = new EventSource(`/api/imports/status/${uploaded.id}`);
+      updateProgress(id) {
+        const stream = new EventSource(`/api/imports/status/${id}`);
+        const context = this;
 
-                stream.onmessage = function (event) {
-                    const data = JSON.parse(event.data);
+        stream.onmessage = function (event) {
+            const data = JSON.parse(event.data);
 
-                    if (Object.keys(data).length > 0) {
-                        const status = document.getElementById(`status${uploaded.id}`);
+            if (Object.keys(data).length > 0) {
+                const status = document.getElementById(`status${id}`);
 
-                        if (status.innerHTML !== data.status) {
-                            status.innerHTML = data.status;
-                        }
-
-                        const progress = document.getElementById(`progress${uploaded.id}`);
-
-                        progress.setAttribute("aria-valuenow", data.progress);
-                        progress.setAttribute("style", `width: ${data.progress}%`);
-                        progress.innerHTML = `${data.progress}%`;
-
-                        if (data.status === 'completed') {
-                            stream.close();
-                            progress.parentElement.remove();
-                        }
-                    }
+                if (status.innerHTML !== data.status) {
+                    status.innerHTML = data.status;
                 }
-            }();
-        });
+
+                const progress = document.getElementById(`progress${id}`);
+
+                progress.setAttribute("aria-valuenow", data.progress);
+                progress.setAttribute("style", `width: ${data.progress}%`);
+                progress.innerHTML = `${data.progress}%`;
+
+                if (!context.showProgress(data.status)) {
+                    stream.close();
+                    progress.parentElement.remove();
+                }
+            }
+        }
+      },
+
+      showProgress(status = 'pending') {
+        return !['completed', 'failed'].includes(status);
       },
 
       luxon(date = null) {
@@ -110,7 +117,10 @@
     mounted() {
       ImportService.get().then((response) => {
         this.uploaded = response.data;
-        this.progress();
+
+        this.uploaded
+          .filter((uploaded) => this.showProgress(uploaded.status))
+          .forEach((uploaded) => this.updateProgress(uploaded.id));
       });
     }
   };
