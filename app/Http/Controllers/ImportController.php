@@ -31,25 +31,21 @@ class ImportController extends Controller
 
     public function import()
     {
-        if (!request()->has('files')) {
+        if (!request()->has('file')) {
             return new Exception('Nothing to import.');
         }
-        
-        $imports = [];
 
-        foreach (request()->file('files') as $uploaded) {
-            $file = $uploaded->storeAs($uploaded->getFilename());
+        $uploaded = request()->file('file');
 
-            $import = Import::create([
-                'file_name' => $uploaded->getClientOriginalName(),
-            ]);
+        $file = $uploaded->storeAs($uploaded->getFilename());
 
-            ImportProductsJob::dispatchAfterResponse($file, $import);
+        $import = Import::create([
+            'file_name' => $uploaded->getClientOriginalName(),
+        ]);
 
-            $imports[] = $import;
-        }
+        ImportProductsJob::dispatchAfterResponse($file, $import);
 
-        return response()->json($imports);
+        return response()->json($import);
     }
 
     public function status($id)
