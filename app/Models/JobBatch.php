@@ -36,12 +36,12 @@ class JobBatch extends Model
 
     public function status(): string
     {
-        if ($this->completed()) {
-            return 'completed';
+        if ($this->hasFailures()) {
+            return 'failed';
         }
 
-        if ($this->failed()) {
-            return 'failed';
+        if ($this->completed()) {
+            return 'completed';
         }
 
         if ($this->processing()) {
