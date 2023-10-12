@@ -5,8 +5,10 @@ https://github.com/wakjoko/yoPrint-assesment/assets/8953339/2bc6a96c-2d92-49ad-b
 ## Introduction
 This app demonstrate importing CSV files into database based on specs listed in assessment docs prepared by Anbin Muniandy of YoPrint for Laravel Engineer Application Coding Assignment.
 
-## Purpose
-Apart from adhering to the specs requirements, this app was created primarily to show an example how to write testable codes and the use of best practices to minimize technical debt.
+## Import Process
+As soon as a csv file is uploaded, a batch job will be created to parse and create multiple queue jobs with each job will upsert 1000 lines from csv file to `products` table.
+When any of the queued job within a batch job has failed, the uploaded csv file will be marked as `failed`.
+`completed` status will be given only when all queued job of a batch is successful.
 
 ## Installation
 Basic steps:
@@ -18,7 +20,7 @@ Basic steps:
 - Generate the app key `php artisan key:generate`
 - Run db migration `php artisan migrate`
 - Compile frontend assets `npm run build`
-- Start the app in separate terminal `php artisan serve`
+- Start the app `php artisan serve`
 - Start the horizon in separate terminal `php artisan horizon`
 
 ## Tech stack
