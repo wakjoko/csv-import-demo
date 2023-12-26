@@ -12,8 +12,8 @@ When any of the queued job within a batch job has failed, the uploaded csv file 
 
 ## Installation
 Basic steps:
-- Clone this repository `git clone https://github.com/wakjoko/yoPrint-assesment.git`
-- Change directory `cd yoPrint-assesment`
+- Clone this repository `git clone https://github.com/wakjoko/csv-import-demo.git`
+- Change directory `cd csv-import-demo`
 - Install app dependencies `composer install` and `npm install`
 - Copy environment file `cp .env.example .env`
 - Set the db connection in `.env`
