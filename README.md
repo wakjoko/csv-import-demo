@@ -1,4 +1,4 @@
-<h1 align="center">CSV Import App for YoPrint</h1>
+<h1 align="center">CSV Import Demo</h1>
 
 https://github.com/wakjoko/csv-import-demo/assets/8953339/e5d2a39a-dbe2-4055-be30-1a1d46872beb
 
