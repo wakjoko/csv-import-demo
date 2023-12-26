@@ -1,9 +1,9 @@
 <h1 align="center">CSV Import App for YoPrint</h1>
 
-https://github.com/wakjoko/yoPrint-assesment/assets/8953339/e5d2a39a-dbe2-4055-be30-1a1d46872beb
+https://github.com/wakjoko/csv-import-demo/assets/8953339/e5d2a39a-dbe2-4055-be30-1a1d46872beb
 
 ## Introduction
-This app demonstrate importing CSV files into database based on specs listed in assessment docs prepared by Anbin Muniandy of YoPrint for Laravel Engineer Application Coding Assignment.
+This app demonstrate importing CSV multiple files into database simultaneously.
 
 ## Import Process
 As soon as a csv file is uploaded, a batch job will be created to parse and create multiple queue jobs with each job will upsert 1000 lines from csv file to `products` table.
